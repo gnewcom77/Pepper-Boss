@@ -1,93 +1,118 @@
-# Pepper Boss — RESTful Web API (Java • Spring Boot • MySQL)
+# Pepper Boss API 🌶️  
+**RESTful Web API for managing peppers, sauces and their ingredients**  
+Tech: `Java 17` • `Spring Boot 3` • `MySQL` • `Maven` • `Lombok`
 
-[![Java](https://img.shields.io/badge/Java-17%2B-blue)]()
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen)]()
-[![MySQL](https://img.shields.io/badge/Database-MySQL-orange)]()
-[![Build](https://img.shields.io/badge/Build-Maven-lightgrey)]()
+---
 
-A backend API for managing **peppers**, **sauces**, and **ingredients** with full CRUD operations and relational modeling. Built as a capstone project to practice ERD design, JPA/Hibernate, and RESTful API development.
+## Overview  
+Pepper Boss is a backend application I built to demonstrate how to design and implement a complete RESTful service with a realistic domain. The API supports:
 
-## Tech Stack
-- **Language:** Java (17+)
-- **Framework:** Spring Boot (3.x)
-- **Database:** MySQL (8.x)
-- **ORM:** JPA / Hibernate
-- **Build:** Maven
-- **Tools:** Git/GitHub, ARC (for HTTP requests)
+- Modeling spicy-food entities (Peppers → Sauces → Ingredients)  
+- A many-to-many relationship (Sauces ⇄ Ingredients)  
+- Full CRUD operations, layered architecture, and relational database design
 
-## Features
-- CRUD for **Peppers**, **Sauces**, **Ingredients**
-- Many-to-many join between **Sauces** and **Ingredients**
-- JSON REST endpoints with conventional plural paths
-- Layered architecture (entities, repositories, controllers)
+I built this project as part of my transition into a backend development role: I wanted to show that I can design data models, build APIs, and produce code someone else can run.
 
-## Getting Started
+---
 
-### Prerequisites
-- Java 17+
-- Maven 3.9+
-- MySQL 8.x
+## Data Model  
+**Key Entities:**
 
-### Setup
-1. Create a MySQL database (example):
+- **Pepper** – name, heat (Scoville units), flavorNotes  
+- **Sauce** – name, brand, heatRating, notes  
+- **Ingredient** – name, category, notes  
+- **SauceIngredient** – join table linking Sauces and Ingredients, with fields: quantity, unit  
+
+*(See the ERD image for reference.)*
+
+---
+
+## Features  
+- CRUD endpoints for Peppers, Sauces and Ingredients  
+- Many-to-many join relationship between Sauces and Ingredients  
+- JSON REST endpoints using conventional plural paths  
+- Clean architecture: Entities → Repositories → Controllers  
+- Seed data optionally available via `data.sql`  
+
+---
+
+## Tech Stack  
+- **Language:** Java 17+  
+- **Framework:** Spring Boot 3  
+- **Database:** MySQL 8.x  
+- **ORM / JPA:** Spring Data JPA / Hibernate  
+- **Build Tool:** Maven  
+- **Other Tools:** Lombok, ARC/Postman (for testing), Git/GitHub  
+
+---
+
+## Getting Started  
+
+### Prerequisites  
+- Java 17+ installed  
+- Maven 3.9+ installed  
+- MySQL 8.x (or compatible) running locally  
+
+### Setup  
+1. Clone the repo:  
+   ```bash
+   git clone https://github.com/gnewcom77/Promineo-Tech-Final-Project-
+   cd Promineo-Tech-Final-Project-
+   ```
+2. Create the database (example):  
    ```sql
    CREATE DATABASE pepper_boss CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
-2. Update `src/main/resources/application.yaml` (or `application.properties`) with your MySQL username/password.
-3. (Optional) Seed sample data using `data.sql`.
+3. Update `src/main/resources/application.yaml` (or `application.properties`) with your MySQL username/password.  
+4. (Optional) Load seed data using `data.sql`.  
+5. Run the application:  
+   ```bash
+   mvn spring-boot:run
+   ```
 
-### Run
-```bash
-mvn spring-boot:run
-```
-App defaults to `http://localhost:8080`.
+---
 
-## Example Endpoints (plural)
-### Peppers
-- `GET    /peppers`
-- `GET    /peppers/{id}`
-- `POST   /peppers`
-- `PUT    /peppers/{id}`
-- `DELETE /peppers/{id}`
+## Example Endpoints  
+### Peppers  
+- `GET /peppers`  
+- `GET /peppers/{id}`  
+- `POST /peppers`  
+- `PUT /peppers/{id}`  
+- `DELETE /peppers/{id}`  
 
-### Sauces
-- `GET    /sauces`
-- `GET    /sauces/{id}`
-- `POST   /sauces`
-- `PUT    /sauces/{id}`
-- `DELETE /sauces/{id}`
+### Sauces  
+- `GET /sauces`  
+- `GET /sauces/{id}`  
+- `POST /sauces`  
+- `PUT /sauces/{id}`  
+- `DELETE /sauces/{id}`  
 
-### Ingredients
-- `GET    /ingredients`
-- `GET    /ingredients/{id}`
-- `POST   /ingredients`
-- `PUT    /ingredients/{id}`
-- `DELETE /ingredients/{id}`
+### Ingredients  
+- `GET /ingredients`  
+- `GET /ingredients/{id}`  
+- `POST /ingredients`  
+- `PUT /ingredients/{id}`  
+- `DELETE /ingredients/{id}`  
 
-*(If your actual controller paths differ, update these to match your code.)*
+---
 
-## Testing with ARC
-Use ARC to send JSON requests. Example POST to create a pepper:
-```http
-POST /peppers
-Content-Type: application/json
+## What I Learned  
+- How to map many-to-many relationships in JPA using a join entity (SauceIngredient)  
+- How to structure a backend project with clear separation of concerns  
+- How to design RESTful CRUD endpoints  
+- How to set up a MySQL database and configure Spring Boot  
+- How to write clean documentation others can follow  
 
-{
-  "name": "Lemon Drop",
-  "heatLevel": "Hot",
-  "notes": "Bright, Citrusy"
-}
-```
+---
 
-## ERD (Overview)
-**Peppers**, **Sauces**, **Ingredients**; **Sauce ↔ Ingredient** is many-to-many via a join table (e.g., `sauce_ingredient` with quantity/unit).
+## Future Improvements  
+- Pagination and filtering  
+- Add authentication (JWT)  
+- Dockerize the app + MySQL  
+- Add unit/integration tests  
+- Deploy a live demo  
 
-## Roadmap
-- Pagination & filtering
-- Basic auth / JWT
-- Dockerized MySQL + app
-- CI build (GitHub Actions)
-- Deployed demo (Render/Railway/Fly)
+---
 
-## License
-MIT © Garrett Newcomer — see [LICENSE](./LICENSE).
+## License  
+MIT © Garrett Newcomer

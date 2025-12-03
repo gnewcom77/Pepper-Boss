@@ -15,61 +15,50 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import pepper.boss.controller.DTO.IngredientDTO;
-import pepper.boss.dao.IngredientDao;
 import pepper.boss.entity.Ingredient;
-import pepper.boss.entity.Sauce;
-import pepper.boss.error.ResourceNotFoundException;
 import pepper.boss.mapper.EntityMapper;
+import pepper.boss.service.IngredientService;
 
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
 
-	private final IngredientDao ingredientDao;
+	private final IngredientService ingredientService;
 
-	public IngredientController(IngredientDao ingredientDao) {
-		this.ingredientDao = ingredientDao;
+	public IngredientController(IngredientService ingredientService) {
+		this.ingredientService = ingredientService;
 	}
 
 	@GetMapping
 	public List<Ingredient> fetchIngredients() {
-		return ingredientDao.findAll();
+		return ingredientService.findAll();
 	}
 
 	@GetMapping("/{id}")
 	public Ingredient fetchIngredientById(@PathVariable Long id) {
-		return ingredientDao.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Ingredient " + id + " not found"));
+		return ingredientService.findById(id);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Ingredient createIngredient(@Valid @RequestBody Ingredient body) {
-		return ingredientDao.save(body);
+		return ingredientService.create(body);
 	}
 
 	@PutMapping("/{id}")
 	public Ingredient updateIngredient(@PathVariable Long id, @Valid @RequestBody Ingredient body) {
-		Ingredient existing = ingredientDao.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Ingredient " + id + " not found"));
-
-		existing.setName(body.getName());
-		existing.setNotes(body.getNotes());
-		return ingredientDao.save(existing);
+		return ingredientService.update(id, body);
 	}
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteIngredient(@PathVariable Long id) {
-		if (!ingredientDao.existsById(id)) {
-			throw new ResourceNotFoundException("Ingredient " + id + " not found");
-		}
-		ingredientDao.deleteById(id);
+		ingredientService.delete(id);
 	}
 
 	@GetMapping("/dto")
 	public List<IngredientDTO> fetchIngredientsDto() {
-		Iterable<Ingredient> items = ingredientDao.findAll();
+		Iterable<Ingredient> items = ingredientService.findAll();
 		List<IngredientDTO> result = new ArrayList<>();
 		for (Ingredient i : items) {
 			result.add(EntityMapper.toDTO(i)); // uses toDTO(Ingredient)
@@ -79,8 +68,7 @@ public class IngredientController {
 
 	@GetMapping("/dto/{id}")
 	public IngredientDTO fetchIngredientDtoById(@PathVariable Long id) {
-		var opt = ingredientDao.findById(id);
-		Ingredient i = opt.orElseThrow(() -> new ResourceNotFoundException("Ingredient " + id + " not found"));
+		Ingredient i = ingredientService.findById(id);
 		return EntityMapper.toDTO(i); // uses toDTO(Ingredient)
 	}
 }

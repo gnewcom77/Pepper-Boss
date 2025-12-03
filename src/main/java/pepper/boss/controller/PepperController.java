@@ -19,68 +19,60 @@ import pepper.boss.dao.PepperDao;
 import pepper.boss.entity.Pepper;
 import pepper.boss.error.ResourceNotFoundException;
 import pepper.boss.mapper.EntityMapper;
+import pepper.boss.service.PepperService;
 
 @RestController
 @RequestMapping("/peppers")
 public class PepperController {
 
-	private final PepperDao pepperDao;
+	private final PepperService pepperService;
 
-	public PepperController(PepperDao pepperDao) {
-		this.pepperDao = pepperDao;
+
+	public PepperController(PepperService pepperService) {
+	    this.pepperService = pepperService;
 	}
 
-	@GetMapping("/dto")
-	public List<PepperDTO> fetchPeppersDto() {
-		Iterable<Pepper> peppers = pepperDao.findAll();
-		List<PepperDTO> result = new ArrayList<>();
-		for (Pepper p : peppers) {
-			result.add(EntityMapper.toPepperDTO(p));
-		}
-		return result;
-	}
+	// ===== Basic CRUD returning entities =====
 
 	@GetMapping
 	public List<Pepper> fetchPeppers() {
-		return pepperDao.findAll();
-	}
-	
-	@GetMapping("/{id}")
-	public Pepper fetchPepperById(@PathVariable Long id) {
-	    return pepperDao.findById(id)
-	        .orElseThrow(() -> new ResourceNotFoundException("Pepper " + id + " not found"));
+		return pepperService.findAll();
 	}
 
-	@GetMapping("/dto/{id}")
-	public PepperDTO fetchPepperDTOById(@PathVariable Long id) {
-		return pepperDao.findById(id).map(p -> EntityMapper.toPepperDTO(p))
-				.orElseThrow(() -> new ResourceNotFoundException("Pepper " + id + " not found"));
+	@GetMapping("/{id}")
+	public Pepper fetchPepperById(@PathVariable Long id) {
+		return pepperService.findById(id);
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Pepper createPepper(@Valid @RequestBody Pepper body) {
-		return pepperDao.save(body);
+		return pepperService.create(body);
 	}
 
 	@PutMapping("/{id}")
 	public Pepper updatePepper(@PathVariable Long id, @Valid @RequestBody Pepper body) {
-		Pepper existing = pepperDao.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Pepper " + id + " not found"));
-
-		existing.setName(body.getName());
-		existing.setHeatLevel(body.getHeatLevel());
-		existing.setNotes(body.getNotes());
-
-		return pepperDao.save(existing);
+		return pepperService.update(id, body);
 	}
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deletePepper(@PathVariable Long id) {
-		if (!pepperDao.existsById(id)) {
-			throw new ResourceNotFoundException("Pepper " + id + " not found");
-		}
-		pepperDao.deleteById(id);
+		pepperService.delete(id);
+	}
+
+
+	@GetMapping("/dto")
+	public List<PepperDTO> fetchPepperDTOs() {
+	    return pepperService.findAll()
+	            .stream()
+	            .map(EntityMapper::toPepperDTO)
+	            .toList();
+	}
+
+	@GetMapping("/{id}/dto")
+	public PepperDTO fetchPepperDTOById(@PathVariable Long id) {
+	    Pepper pepper = pepperService.findById(id);
+	    return EntityMapper.toPepperDTO(pepper);
 	}
 }
